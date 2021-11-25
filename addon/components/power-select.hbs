@@ -12,19 +12,27 @@
   @calculatePosition={{@calculatePosition}}
   @triggerComponent={{@ebdTriggerComponent}}
   @contentComponent={{@ebdContentComponent}}
-  as |dropdown|>
-  {{#let (assign dropdown (hash
-    selected=this.selected
-    highlighted=this.highlighted
-    options=this.options
-    results=this.results
-    resultsCount=this.resultsCount
-    loading=this.loading
-    isActive=this.isActive
-    searchText=this.searchText
-    lastSearchedText=this.lastSearchedText
-    actions=(assign dropdown.actions this._publicAPIActions)
-  )) (concat "ember-power-select-options-" dropdown.uniqueId) as |publicAPI listboxId|}}
+  as |dropdown|
+>
+  {{#let
+    (assign
+      dropdown
+      (hash
+        selected=this.selected
+        highlighted=this.highlighted
+        options=this.options
+        results=this.results
+        resultsCount=this.resultsCount
+        loading=this.loading
+        isActive=this.isActive
+        searchText=this.searchText
+        lastSearchedText=this.lastSearchedText
+        actions=(assign dropdown.actions this._publicAPIActions)
+      )
+    )
+    (concat "ember-power-select-options-" dropdown.uniqueId)
+    as |publicAPI listboxId|
+  }}
     <dropdown.Trigger
       @eventType={{or @eventType "mousedown"}}
       {{did-insert this._updateOptions @options}}
@@ -37,8 +45,17 @@
       {{on "keydown" this.handleTriggerKeydown}}
       {{on "focus" this.handleFocus}}
       {{on "blur" this.handleBlur}}
-      class="ember-power-select-trigger {{@triggerClass}}{{if publicAPI.isActive " ember-power-select-trigger--active"}}"
-      aria-activedescendant={{if dropdown.isOpen (unless @searchEnabled (concat publicAPI.uniqueId "-" this.highlightedIndex))}}
+      class="ember-power-select-trigger
+        {{@triggerClass}}{{if
+          publicAPI.isActive
+          " ember-power-select-trigger--active"
+        }}"
+      aria-activedescendant={{if
+        dropdown.isOpen
+        (unless
+          @searchEnabled (concat publicAPI.uniqueId "-" this.highlightedIndex)
+        )
+      }}
       aria-controls={{unless @searchEnabled listboxId}}
       aria-describedby={{@ariaDescribedBy}}
       aria-haspopup={{unless @searchEnabled "listbox"}}
@@ -52,8 +69,11 @@
       id={{@triggerId}}
       tabindex={{and (not @disabled) (or @tabindex "0")}}
       ...attributes
-      >
-      {{#let (component (or @triggerComponent "power-select/trigger")) as |Trigger|}}
+    >
+      {{#let
+        (or @triggerComponent (component "power-select/trigger"))
+        as |Trigger|
+      }}
         <Trigger
           @allowClear={{@allowClear}}
           @buildSelection={{@buildSelection}}
@@ -70,13 +90,27 @@
           @onKeydown={{this.handleKeydown}}
           @placeholder={{@placeholder}}
           @placeholderComponent={{this.placeholderComponent}}
-          as |opt term|>
+          as |opt term|
+        >
           {{yield opt term}}
         </Trigger>
       {{/let}}
     </dropdown.Trigger>
-    <dropdown.Content class="ember-power-select-dropdown{{if publicAPI.isActive " ember-power-select-dropdown--active"}} {{@dropdownClass}}">
-      {{#let (component (if (eq @beforeOptionsComponent undefined) "power-select/before-options" @beforeOptionsComponent)) as |BeforeOptions|}}
+    <dropdown.Content
+      class="ember-power-select-dropdown{{if
+          publicAPI.isActive
+          " ember-power-select-dropdown--active"
+        }}
+        {{@dropdownClass}}"
+    >
+      {{#let
+        (if
+          (eq @beforeOptionsComponent undefined)
+          (component "power-select/before-options")
+          (ensure-safe-component @beforeOptionsComponent)
+        )
+        as |BeforeOptions|
+      }}
         <BeforeOptions
           @select={{publicAPI}}
           @searchEnabled={{@searchEnabled}}
@@ -88,21 +122,43 @@
           @placeholderComponent={{this.placeholderComponent}}
           @extra={{@extra}}
           @listboxId={{listboxId}}
-          @ariaActiveDescendant={{concat publicAPI.uniqueId "-" this.highlightedIndex}}
+          @ariaActiveDescendant={{concat
+            publicAPI.uniqueId
+            "-"
+            this.highlightedIndex
+          }}
           @selectedItemComponent={{@selectedItemComponent}}
           @searchPlaceholder={{@searchPlaceholder}}
-          />
+        />
       {{/let}}
       {{#if this.mustShowSearchMessage}}
-        {{#let (component (or @searchMessageComponent "power-select/search-message")) as |SearchMessage|}}
-          <SearchMessage @searchMessage={{this.searchMessage}} @select={{publicAPI}}/>
+        {{#let
+          (or @searchMessageComponent (component "power-select/search-message"))
+          as |SearchMessage|
+        }}
+          <SearchMessage
+            @searchMessage={{this.searchMessage}}
+            @select={{publicAPI}}
+          />
         {{/let}}
       {{else if this.mustShowNoMessages}}
-        {{#let (component (or @noMatchesMessageComponent "power-select/no-matches-message")) as |NoMatchesMessage|}}
-          <NoMatchesMessage @noMatchesMessage={{this.noMatchesMessage}} @select={{publicAPI}} />
+        {{#let
+          (or
+            @noMatchesMessageComponent
+            (component "power-select/no-matches-message")
+          )
+          as |NoMatchesMessage|
+        }}
+          <NoMatchesMessage
+            @noMatchesMessage={{this.noMatchesMessage}}
+            @select={{publicAPI}}
+          />
         {{/let}}
       {{else}}
-        {{#let (component (or @optionsComponent "power-select/options")) as |Options|}}
+        {{#let
+          (or @optionsComponent (component "power-select/options"))
+          as |Options|
+        }}
           <Options
             @loadingMessage={{or @loadingMessage "Loading options..."}}
             @select={{publicAPI}}
@@ -111,121 +167,21 @@
             @optionsComponent={{Options}}
             @extra={{@extra}}
             @highlightOnHover={{this.highlightOnHover}}
-            @groupComponent={{or @groupComponent "power-select/power-select-group"}}
+            @groupComponent={{or
+              @groupComponent
+              "power-select/power-select-group"
+            }}
             id={{listboxId}}
-            class="ember-power-select-options" as |option select|>
+            class="ember-power-select-options"
+            as |option select|
+          >
             {{yield option select}}
           </Options>
         {{/let}}
       {{/if}}
-      {{#let (component @afterOptionsComponent) as |AfterOptions|}}
-        <AfterOptions
-          @extra={{@extra}}
-          @select={{publicAPI}}
-        />
+      {{#let @afterOptionsComponent as |AfterOptions|}}
+        <AfterOptions @extra={{@extra}} @select={{publicAPI}} />
       {{/let}}
     </dropdown.Content>
   {{/let}}
 </BasicDropdown>
-{{!-- <BasicDropdown
-  @horizontalPosition={{@horizontalPosition}}
-  @destination={{@destination}}
-  @initiallyOpened={{@initiallyOpened}}
-  @matchTriggerWidth={{this.matchTriggerWidth}}
-  @preventScroll={{this.preventScroll}}
-  @onClose={{this.handleClose}}
-  @onOpen={{this.handleOpen}}
-  @registerAPI={{this._registerAPI}}
-  @renderInPlace={{@renderInPlace}}
-  @verticalPosition={{@verticalPosition}}
-  @disabled={{@disabled}}
-  @calculatePosition={{this.calculatePosition}}
-  ...attributes as |dropdown|>
-  <dropdown.Trigger
-    @eventType={{or @eventType "mousedown"}}
-    {{on "keydown" this.handleTriggerKeydown}}
-    {{on "focus" this.handleTriggerFocus}}
-    {{on "blur" this.handleTriggerBlur}}
-    class={{this.concatenatedTriggerClasses}}
-    id={{@triggerId}}
-    role={{this.triggerRole}}
-    aria-describedby={{@ariaDescribedBy}}
-    aria-invalid={{@ariaInvalid}}
-    aria-label={{@ariaLabel}}
-    aria-labelledby={{@ariaLabelledBy}}
-    aria-required={{@required}}
-    title={{@title}}
-    tabindex={{and (not @disabled) (or @tabindex "0")}}>
-    {{#let (component this.triggerComponent) as |Trigger|}}
-      <Trigger
-        @htmlTag={{this._triggerTagName}}
-        @allowClear={{@allowClear}}
-        @buildSelection={{@buildSelection}}
-        @extra={{@extra}}
-        @listboxId={{this.optionsId}}
-        @loadingMessage={{this.loadingMessage}}
-        @onFocus={{this.handleFocus}}
-        @onBlur={{this.handleBlur}}
-        @onInput={{this.handleInput}}
-
-        @onKeydown={{this.handleKeydown}}
-        @searchEnabled={{@searchEnabled}}
-        @searchField={{@searchField}}
-        @select={{this.publicAPI}}
-        @selectedItemComponent={{@selectedItemComponent}}
-        as |opt term|>
-        {{yield opt term}}
-      </Trigger>
-    {{/let}}
-  </dropdown.Trigger>
-  <dropdown.Content @htmlTag={{this._contentTagName}} class={{this.concatenatedDropdownClasses}}>
-    {{#let (component this.beforeOptionsComponent) as |BeforeOptions|}}
-      <BeforeOptions
-        @animationEnabled={{@animationEnabled}}
-        @select={{this.publicAPI}}
-        @searchEnabled={{@searchEnabled}}
-        @searchPlaceholder={{@searchPlaceholder}}
-        @listboxId={{this.optionsId}}
-        @onInput={{this.handleInput}}
-        @onKeydown={{this.handleKeydown}}
-        @onFocus={{this.handleFocus}}
-        @onBlur={{this.handleBlur}}
-        @extra={{@extra}}
-        @placeholder={{@placeholder}}
-        @placeholderComponent={{this.placeholderComponent}}
-        @selectedItemComponent={{@selectedItemComponent}}/>
-    {{/let}}
-    {{#if this.mustShowSearchMessage}}
-      {{#let (component this.searchMessageComponent) as |SearchMessage|}}
-        <SearchMessage @searchMessage={{this.searchMessage}} @select={{this.publicAPI}}/>
-      {{/let}}
-    {{else if this.mustShowNoMessages}}
-      {{#if this.noMatchesMessage}}
-        <ul class="ember-power-select-options" role="listbox">
-          <li class="ember-power-select-option ember-power-select-option--no-matches-message" role="option">
-            {{this.noMatchesMessage}}
-          </li>
-        </ul>
-      {{/if}}
-    {{else}}
-      {{#let (component this.optionsComponent) as |Options|}}
-        <Options
-          @loadingMessage={{this.loadingMessage}}
-          @groupIndex=""
-          @extra={{@extra}}
-          @select={{this.publicAPI}}
-          @options={{this.publicAPI.results}}
-          @optionsComponent={{Options}}
-          @highlightOnHover={{this.highlightOnHover}}
-          @groupComponent={{this.groupComponent}}
-          id={{this.optionsId}}
-          class="ember-power-select-options" as |option term|>
-          {{yield option term}}
-        </Options>
-      {{/let}}
-    {{/if}}
-    {{#let (component this.afterOptionsComponent) as |AfterOptions|}}
-      <AfterOptions @select={{this.publicAPI}} @extra={{@extra}}/>
-    {{/let}}
-  </dropdown.Content>
-</BasicDropdown> --}}

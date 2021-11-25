@@ -50,12 +50,20 @@
   @eventType={{@eventType}}
   @title={{@title}}
   @triggerClass="ember-power-select-multiple-trigger {{@triggerClass}}"
-  @triggerComponent={{component (or @triggerComponent "power-select-multiple/trigger") tabindex=@tabindex}}
+  @triggerComponent={{(component
+    (or
+      (ensure-safe-component @triggerComponent)
+      (component "power-select-multiple/trigger")
+    )
+    tabindex=@tabindex
+  )}}
   @triggerId={{@triggerId}}
   @verticalPosition={{@verticalPosition}}
   @tabindex={{this.computedTabIndex}}
   @ebdTriggerComponent={{@ebdTriggerComponent}}
   @ebdContentComponent={{@ebdContentComponent}}
-  ...attributes as |option select|>
+  ...attributes
+  as |option select|
+>
   {{yield option select}}
 </PowerSelect>

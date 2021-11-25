@@ -5,21 +5,31 @@
   {{did-update this.openChanged @select.isOpen}}
   {{on "touchstart" this.chooseOption}}
   {{on "mousedown" this.chooseOption}}
-  ...attributes>
+  ...attributes
+>
   {{#each @select.selected as |opt idx|}}
-    <li class="ember-power-select-multiple-option {{if opt.disabled "ember-power-select-multiple-option--disabled"}}">
+    <li
+      class="ember-power-select-multiple-option
+        {{if opt.disabled "ember-power-select-multiple-option--disabled"}}"
+    >
       {{#unless @select.disabled}}
         <span
           {{! template-lint-disable "no-nested-interactive" }}
           role="button"
           aria-label="remove element"
           class="ember-power-select-multiple-remove-btn"
-          data-selected-index={{idx}}>
+          data-selected-index={{idx}}
+        >
           &times;
         </span>
       {{/unless}}
       {{#if @selectedItemComponent}}
-        {{component @selectedItemComponent extra=@extra option=opt select=@select}}
+        {{component
+          (ensure-safe-component @selectedItemComponent)
+          extra=@extra
+          option=opt
+          select=@select
+        }}
       {{else}}
         {{yield opt @select}}
       {{/if}}
@@ -50,7 +60,8 @@
       {{on "blur" @onBlur}}
       {{on "input" this.handleInput}}
       {{on "keydown" this.handleKeydown}}
-      {{did-insert this.storeInputStyles}}>
+      {{did-insert this.storeInputStyles}}
+    />
   {{/if}}
 </ul>
 <span class="ember-power-select-status-icon"></span>
